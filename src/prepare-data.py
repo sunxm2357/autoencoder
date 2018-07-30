@@ -7,6 +7,7 @@ import os
 import numpy as np
 import math
 from collections import defaultdict, Counter
+import pdb
 
 """
 This script processes an input text file to produce data in binary
@@ -59,7 +60,7 @@ def load_data_memory_friendly(path, max_size, min_occurrences=10,
         print('Converting %d sentences with length between %d and %d'
               % (num_sentences, min_threshold, threshold))
         sents, sizes = create_sentence_matrix(path, num_sentences,
-                                              min_threshold, threshold, dd)
+                                              min_threshold, min(threshold, max_size), dd)
 
         # shuffle sentences and sizes with the sime RNG state
         state = np.random.get_state()
@@ -213,9 +214,11 @@ if __name__ == '__main__':
     parser.add_argument('input', help='Text file previously tokenized '
                                       '(by whitespace) and preprocessed')
     parser.add_argument('output', help='Directory to save the data')
+    # TODO: set to 25 or 30
     parser.add_argument('--max-length',
                         help='Maximum sentence size (default 60)',
                         type=int, default=60, dest='max_length')
+    # TODO: set to 1
     parser.add_argument('--min-freq', help='Minimum times a word must '
                                            'occur (default 10)',
                         default=10, type=int, dest='min_freq')

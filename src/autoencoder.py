@@ -7,6 +7,9 @@ import numpy as np
 import logging
 import json
 import os
+import pdb
+from interactive import SentenceWrapper
+import utils
 
 
 class TextAutoencoder(object):
@@ -31,6 +34,9 @@ class TextAutoencoder(object):
         # only EOS exists as a possible network output
         self.go = go
         self.eos = go
+
+        self.word_dict = utils.WordDictionary('../hri_data/vocabulary.txt')
+        self.index_dict = self.word_dict.inverse_dictionary()
 
         self.bidirectional = bidirectional
         self.vocab_size = embeddings.shape[0]
@@ -287,6 +293,13 @@ class TextAutoencoder(object):
                     msg += '\t(saved model)'
 
                 logging.info(msg)
+
+                string = 'the driver stopped at stop sign'
+                sent = SentenceWrapper(string, self.word_dict, True)
+                answer = self.run(session, [sent.indices], [len(sent)])
+                answer_words = [self.index_dict[i] for i in answer]
+                answer_str = ' '.join(answer_words)
+                print('Model output:', answer_str.encode('utf-8'))
 
     def save(self, saver, session, directory):
         """
