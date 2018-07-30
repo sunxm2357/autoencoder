@@ -13,6 +13,8 @@ import pdb
 import tqdm
 import os
 
+query_seq = ['straight', 'drove straight', 'went straight', 'intersection', 'stop sign', 'light']
+
 
 def read_sequence(file_name, max_len=25, min_len=2):
     with open(file_name, 'r') as f:
@@ -61,7 +63,7 @@ else:
                 embeddings = np.concatenate((embeddings, message_embeddings), axis=0)
             np.save(embedding_file, embeddings)
 
-cls_num = 10
+cls_num = 200
 cluster = AgglomerativeClustering(n_clusters=cls_num, affinity='cosine', linkage='complete').fit(embeddings)
 labels = cluster.labels_
 output_file = 'caption_%s_cluster_%d.txt' % (caption_type, cls_num)
@@ -86,4 +88,12 @@ for clss_id in idxs:
 
 with open(output_file, 'w+') as f:
     f.writelines(lines)
+
+for phrase in query_seq:
+    count = 0
+    for idx, sentence in enumerate(documents):
+        if phrase in sentence:
+            count += counts[idx]
+    print(phrase, count)
+
 
